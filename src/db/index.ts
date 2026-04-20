@@ -73,8 +73,19 @@ export function getDb(): Db {
   const schema = fs.readFileSync(path.join(process.cwd(), 'src/db/schema.sql'), 'utf8');
   db.exec(schema);
 
+  // Incremental migrations (safe to run on every boot)
+  runMigrations(db);
+
   _db = db;
   return wrap(db);
+}
+
+function runMigrations(db: DatabaseSync) {
+  const add = (sql: string) => {
+    try { db.exec(sql); } catch { /* column/index already exists */ }
+  };
+  add("ALTER TABLE recordings ADD COLUMN trainee_id INTEGER REFERENCES trainees(id)");
+  add("CREATE INDEX IF NOT EXISTS idx_recordings_trainee ON recordings(trainee_id)");
 }
 
 export type Recording = {

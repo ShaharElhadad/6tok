@@ -57,18 +57,18 @@ export function Sidebar() {
           />
         </NavGroup>
 
-        <NavGroup title="צוות" dim>
+        <NavGroup title="צוות">
           <NavItem
             href="/team"
             label="מתאמנים"
             icon={<Users className="h-[16px] w-[16px]" />}
-            disabled
+            active={pathname.startsWith('/team')}
           />
           <NavItem
             href="/settings"
             label="הגדרות"
             icon={<Settings className="h-[16px] w-[16px]" />}
-            disabled
+            active={pathname.startsWith('/settings')}
           />
         </NavGroup>
       </nav>

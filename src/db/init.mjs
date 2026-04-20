@@ -14,5 +14,10 @@ db.exec('PRAGMA journal_mode = WAL;');
 db.exec('PRAGMA foreign_keys = ON;');
 db.exec(schema);
 
+// Migrations
+const mig = (sql) => { try { db.exec(sql); } catch { /* ok */ } };
+mig("ALTER TABLE recordings ADD COLUMN trainee_id INTEGER REFERENCES trainees(id)");
+mig("CREATE INDEX IF NOT EXISTS idx_recordings_trainee ON recordings(trainee_id)");
+
 console.log('6TOK DB ready at', dbPath);
 db.close();

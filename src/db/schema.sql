@@ -1,6 +1,18 @@
--- 6TOK schema (SQLite)
--- Dev: better-sqlite3 at ./data/6tok.db
+-- 6TOK schema (SQLite, node:sqlite)
+-- Dev: ./data/6tok.db
 -- Prod swap: Postgres (schema is portable — change AUTOINCREMENT to SERIAL/BIGSERIAL).
+
+CREATE TABLE IF NOT EXISTS trainees (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  email TEXT,
+  phone TEXT,
+  notes TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_trainees_name ON trainees(name);
 
 CREATE TABLE IF NOT EXISTS scripts (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -26,7 +38,7 @@ CREATE TABLE IF NOT EXISTS recordings (
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
-CREATE INDEX IF NOT EXISTS idx_recordings_status ON recordings(status);
+CREATE INDEX IF NOT EXISTS idx_recordings_status  ON recordings(status);
 CREATE INDEX IF NOT EXISTS idx_recordings_created ON recordings(created_at DESC);
 
 CREATE TABLE IF NOT EXISTS transcript_segments (
