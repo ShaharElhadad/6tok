@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>6TOK — הצעת מחיר</title>
+  <meta name="description" content="מערכת לניתוח שיחות מכירה — הצעת מחיר עבור 6TOK" />
+  <link rel="icon" href="logo.png" />
+  <meta property="og:title" content="6TOK — הצעת מחיר" />
+  <meta property="og:description" content="מערכת לאימון מכירות אמיתי. העלה שיחה, תקבל ניתוח מקצועי לכל רגע." />
+  <meta property="og:image" content="logo.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --ink-950: #0F0F10;
+      --ink-900: #171719;
+      --ink-800: #1F1F22;
+      --ink-700: #2B2B2E;
+      --ink-600: #3A3A3E;
+      --ink-500: #4C4C52;
+      --ink-400: #6B6B72;
+      --ink-300: #9C9CA3;
+      --ink-200: #C4C4CA;
+      --ink-100: #E5E5E8;
+      --brand: #E85D2B;
+      --brand-soft: rgba(232, 93, 43, 0.12);
+      --brand-ring: rgba(232, 93, 43, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0; padding: 0;
+      background: var(--ink-950);
+      color: var(--ink-100);
+      font-family: 'Rubik', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
+    }
+    body {
+      background-image:
+        radial-gradient(90% 50% at 50% 0%, rgba(232,93,43,0.14) 0%, rgba(232,93,43,0) 60%),
+        linear-gradient(180deg, #0F0F10 0%, #131315 100%);
+      background-attachment: fixed;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    ::selection { background: rgba(232,93,43,0.4); color:#fff; }
+
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+    header.top {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(15,15,16,0.8);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .top-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 0;
+    }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo img { width: 42px; height: 42px; object-fit: contain; }
+    .logo .brand { font-weight: 800; letter-spacing: 1px; font-size: 18px; color: var(--ink-100); }
+    .logo .tag { color: var(--brand); font-size: 12px; font-weight: 500; line-height: 1; margin-top: 4px; }
+    .top a.cta {
+      color: var(--brand); font-size: 13px; font-weight: 600;
+      padding: 8px 14px; border-radius: 999px;
+      border: 1px solid var(--brand-ring);
+      background: var(--brand-soft);
+      text-decoration: none;
+      transition: background .2s;
+    }
+    .top a.cta:hover { background: rgba(232,93,43,0.22); }
+
+    /* Hero */
+    section.hero {
+      text-align: center;
+      padding: 88px 0 56px;
+    }
+    .hero-logo { width: 108px; height: 108px; margin: 0 auto 24px; object-fit: contain;
+      filter: drop-shadow(0 20px 60px rgba(232,93,43,0.25));
+    }
+    .hero h1 {
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 800;
+      line-height: 1.15;
+      margin: 0 0 16px;
+      letter-spacing: -0.01em;
+    }
+    .hero h1 .accent { color: var(--brand); }
+    .hero p {
+      font-size: clamp(16px, 2vw, 19px);
+      color: var(--ink-200);
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .kicker {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 12px; border-radius: 999px;
+      background: var(--brand-soft);
+      border: 1px solid var(--brand-ring);
+      color: var(--brand);
+      font-size: 12px; font-weight: 600;
+      margin-bottom: 20px;
+    }
+    .kicker .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--brand);
+      box-shadow: 0 0 0 3px var(--brand-soft);
+    }
+
+    /* Cards / sections */
+    section { padding: 40px 0; }
+    h2.section-title {
+      font-size: clamp(22px, 3vw, 28px);
+      font-weight: 800;
+      margin: 0 0 8px;
+    }
+    .section-sub {
+      color: var(--ink-300);
+      margin: 0 0 28px;
+      font-size: 15px;
+    }
+
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    @media (max-width: 760px) {
+      .grid-3, .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 22px;
+      transition: border-color .2s, transform .2s;
+    }
+    .card:hover { border-color: rgba(232,93,43,0.25); }
+    .card h3 { margin: 0 0 8px; font-size: 16px; font-weight: 700; color: var(--ink-100); }
+    .card p { margin: 0; color: var(--ink-300); font-size: 14px; line-height: 1.65; }
+    .card .icon {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: var(--brand-soft);
+      border: 1px solid var(--brand-ring);
+      color: var(--brand);
+      display: inline-flex; align-items: center; justify-content: center;
+      margin-bottom: 14px;
+      font-size: 18px; font-weight: 800;
+    }
+    .card .num {
+      width: 32px; height: 32px; border-radius: 10px;
+      background: var(--brand);
+      color: #fff;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 14px;
+      margin-bottom: 14px;
+      box-shadow: 0 0 0 4px var(--brand-soft);
+    }
+
+    /* Examples */
+    .examples {
+      background: linear-gradient(180deg, rgba(232,93,43,0.06), rgba(232,93,43,0.02));
+      border: 1px solid var(--brand-ring);
+      border-radius: 20px;
+      padding: 28px;
+    }
+    .examples h3 {
+      margin: 0 0 18px; font-size: 18px; color: var(--brand);
+    }
+    .examples ul {
+      list-style: none; padding: 0; margin: 0;
+      display: grid; gap: 10px;
+    }
+    .examples li {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 14px 16px;
+      background: rgba(15,15,16,0.5);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 12px;
+    }
+    .examples li .arrow {
+      color: var(--brand); font-weight: 800; flex: none; margin-top: 2px;
+    }
+    .examples li strong { color: var(--ink-100); font-weight: 600; }
+    .examples li span { color: var(--ink-300); }
+
+    /* Steps */
+    .steps { counter-reset: step; }
+    .step { display: flex; gap: 16px; padding: 18px 0; border-top: 1px solid rgba(255,255,255,0.05); }
+    .step:first-child { border-top: 0; }
+    .step .num { flex: none; }
+    .step h4 { margin: 0 0 4px; font-size: 16px; color: var(--ink-100); }
+    .step p { margin: 0; color: var(--ink-300); font-size: 14px; }
+
+    /* Timeline */
+    .timeline {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 12px;
+      margin-top: 16px;
+    }
+    @media (max-width: 760px) { .timeline { grid-template-columns: 1fr; } }
+    .tl-card {
+      padding: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      position: relative;
+    }
+    .tl-card .week {
+      display: inline-block; padding: 4px 10px; border-radius: 999px;
+      background: var(--brand-soft); border: 1px solid var(--brand-ring); color: var(--brand);
+      font-size: 11px; font-weight: 700; margin-bottom: 10px;
+    }
+    .tl-card h4 { margin: 0 0 6px; font-size: 15px; }
+    .tl-card p { margin: 0; color: var(--ink-300); font-size: 13px; }
+
+    /* Price */
+    .price-wrap { text-align: center; padding: 48px 0 20px; }
+    .price-card {
+      display: inline-block;
+      padding: 36px 48px;
+      background: linear-gradient(180deg, rgba(232,93,43,0.08), rgba(232,93,43,0.02));
+      border: 1px solid var(--brand-ring);
+      border-radius: 24px;
+      box-shadow: 0 20px 60px -10px rgba(232,93,43,0.2);
+    }
+    .price-label {
+      color: var(--ink-300); font-size: 13px; letter-spacing: 1px; text-transform: uppercase;
+    }
+    .price {
+      font-size: clamp(56px, 10vw, 88px);
+      font-weight: 900;
+      color: var(--brand);
+      line-height: 1;
+      margin: 8px 0;
+      letter-spacing: -0.02em;
+    }
+    .price .currency { font-size: 0.45em; font-weight: 700; color: var(--ink-200); vertical-align: top; }
+    .price-note { color: var(--ink-300); font-size: 14px; }
+    .price-note strong { color: var(--ink-100); }
+
+    /* Includes */
+    .includes {
+      max-width: 600px; margin: 28px auto 0;
+      padding: 20px; text-align: right;
+      background: rgba(15,15,16,0.4);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 14px;
+    }
+    .includes h4 { margin: 0 0 12px; font-size: 14px; color: var(--ink-100); font-weight: 600; }
+    .includes ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+    .includes li { padding-right: 22px; position: relative; color: var(--ink-200); font-size: 14px; }
+    .includes li::before {
+      content: '✓'; position: absolute; right: 0; top: 0; color: var(--brand); font-weight: 800;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.05);
+      margin-top: 60px;
+      padding: 32px 0;
+      text-align: center;
+      color: var(--ink-400);
+      font-size: 13px;
+    }
+    footer .brand-small {
+      font-weight: 800; color: var(--ink-200); letter-spacing: 1px;
+    }
+
+    /* Big CTA */
+    .final-cta {
+      margin-top: 24px;
+      display: inline-flex; gap: 10px; align-items: center;
+      padding: 14px 28px;
+      background: var(--brand); color: #fff;
+      border-radius: 999px; font-weight: 700; font-size: 15px;
+      text-decoration: none;
+      box-shadow: 0 12px 40px -10px rgba(232,93,43,0.5);
+      transition: transform .15s;
+    }
+    .final-cta:hover { transform: translateY(-1px); }
+
+    /* Pull quote */
+    .pull {
+      margin: 24px 0; padding: 24px 28px;
+      background: linear-gradient(90deg, rgba(232,93,43,0.08), rgba(232,93,43,0.0));
+      border-right: 3px solid var(--brand);
+      border-radius: 6px;
+      color: var(--ink-100);
+      font-size: 17px;
+      font-weight: 500;
+      line-height: 1.55;
+    }
+    .pull em { color: var(--brand); font-style: normal; font-weight: 700; }
+  </style>
+</head>
+<body>
+
+  <header class="top">
+    <div class="wrap top-inner">
+      <a href="#top" class="logo" style="text-decoration:none">
+        <img src="logo.png" alt="6TOK" />
+        <div style="display:flex;flex-direction:column">
+          <span class="brand">6TOK</span>
+          <span class="tag">למכור בביטחון</span>
+        </div>
+      </a>
+      <a href="#price" class="cta">לצפייה במחיר</a>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <!-- HERO -->
+    <section class="hero wrap">
+      <img class="hero-logo" src="logo.png" alt="6TOK" />
+      <div class="kicker"><span class="dot"></span>הצעת מחיר · מערכת לאימון מכירות</div>
+      <h1>
+        כל שיחת מכירה הופכת ל<span class="accent">שיעור ענק</span>.<br/>
+        כל סוכן שלך משתפר — <span class="accent">לבד, כל יום.</span>
+      </h1>
+      <p>
+        מערכת אחת שמעלים אליה את ההקלטות של השיחות, מקבלים ניתוח מקצועי לעומק,
+        ויודעים בדיוק מה היה טוב, מה לא, ומה לעשות בשיחה הבאה.
+      </p>
+    </section>
+
+    <!-- WHY -->
+    <section class="wrap">
+      <div class="pull">
+        היום את/ה בעצם מקשיב/ה לכל שיחה ידנית, כותב/ת הערות, ומקווה שהסוכן זוכר מה דיברנו עליו —
+        <em>6TOK עושה את זה בשבילך, לכל שיחה, ללא יוצא מן הכלל.</em>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="wrap" id="how">
+      <h2 class="section-title">איך זה עובד — 3 שלבים</h2>
+      <p class="section-sub">ללא התקנות, ללא תוכנות. נכנסים לאתר ומעלים קובץ.</p>
+
+      <div class="steps card" style="padding: 8px 22px;">
+        <div class="step">
+          <div class="num">1</div>
+          <div>
+            <h4>מעלים את ההקלטה</h4>
+            <p>פשוט גוררים את הקובץ. MP3, WAV, או כל פורמט אודיו רגיל.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="num">2</div>
+          <div>
+            <h4>המערכת מתמללת ומנתחת</h4>
+            <p>תוך דקות: תמלול מדויק בעברית + ניתוח מקצועי של כל שיחה — מה היה טוב, מה פספסנו, ואיפה בדיוק בשיחה.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="num">3</div>
+          <div>
+            <h4>לומדים מכל רגע</h4>
+            <p>לוחצים על כל משפט — קופצים לאותו רגע בהקלטה. רואים איפה עמדנו בתסריט, איפה סטינו, ומה לעשות טוב יותר בפעם הבאה.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHAT YOU GET -->
+    <section class="wrap">
+      <h2 class="section-title">מה אתם מקבלים</h2>
+      <p class="section-sub">כלי עבודה יומיומי שחוסך שעות של אימון ומעלה תוצאות של כל סוכן.</p>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="icon">A</div>
+          <h3>תמלול מדויק בעברית</h3>
+          <p>כל מה שנאמר בשיחה, ממש כמו שזה נאמר — מסונכרן לאודיו מילה־במילה.</p>
+        </div>
+        <div class="card">
+          <div class="icon">B</div>
+          <h3>ניתוח מכירות מקצועי</h3>
+          <p>המערכת מזהה <strong>קירוב</strong> (נוצר חיבור?), <strong>הרחקה</strong> (איבדנו אותו?), <strong>שאלות נכונות</strong>, <strong>טון וביטחון</strong>.</p>
+        </div>
+        <div class="card">
+          <div class="icon">C</div>
+          <h3>הצמדה לתסריט שלך</h3>
+          <p>מעלים פעם אחת את תסריט המכירה. המערכת משווה כל שיחה ומראה איפה עמדו בו ואיפה סטו ממנו.</p>
+        </div>
+        <div class="card">
+          <div class="icon">D</div>
+          <h3>ציון + המלצות מדויקות</h3>
+          <p>ציון כולל לשיחה, רשימה ברורה של חזקות, חולשות, והמלצות פרקטיות לשיפור.</p>
+        </div>
+        <div class="card">
+          <div class="icon">E</div>
+          <h3>רגעי מפתח</h3>
+          <p>רשימת הרגעים הכי חשובים בשיחה — לחיוב ולשלילה — עם הסבר ולחיצה לאותו רגע בהקלטה.</p>
+        </div>
+        <div class="card">
+          <div class="icon">F</div>
+          <h3>הכל נשמר</h3>
+          <p>ארכיון מלא של כל ההקלטות, התמלולים, והניתוחים. גישה מכל מכשיר, מתי שתרצו.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXAMPLES -->
+    <section class="wrap">
+      <h2 class="section-title">דוגמאות — מה אפשר לעשות בפועל</h2>
+      <p class="section-sub">תרחישים מעשיים מהיומיום שלכם עם 6TOK.</p>
+
+      <div class="examples">
+        <h3>רגעים אמיתיים מהמערכת</h3>
+        <ul>
+          <li>
+            <span class="arrow">←</span>
+            <div><strong>סוכן שואל שאלה סגורה במקום פתוחה.</strong> <span>המערכת מסמנת: "בדקה 2:14 שאלת 'זה מעניין אותך?' — שאלה סגורה. נסה: 'מה מהדברים שדיברנו עליהם הכי רלוונטי אליך?'"</span></div>
+          </li>
+          <li>
+            <span class="arrow">←</span>
+            <div><strong>הלקוח מתנגד. הסוכן ממהר להסביר.</strong> <span>המערכת מראה: "בדקה 5:30 פספסת את שלב ה'האזנה' — קפצת ישר להסבר. צפה בסגירת ההתנגדות המומלצת בתסריט שלך."</span></div>
+          </li>
+          <li>
+            <span class="arrow">←</span>
+            <div><strong>סגירה חלשה.</strong> <span>המערכת מאותתת: "לא היה ניסיון סגירה ברור בשיחה. הלקוח אמר 'אני אחשוב' — אין אחריו שאלה פתוחה של 'על מה בעצם יש לחשוב?'"</span></div>
+          </li>
+          <li>
+            <span class="arrow">←</span>
+            <div><strong>טון ירד בסוף השיחה.</strong> <span>המערכת תסמן את הרגע המדויק שבו האנרגיה נפלה — ותציע איך לסיים בעוצמה.</span></div>
+          </li>
+          <li>
+            <span class="arrow">←</span>
+            <div><strong>קירוב מצוין.</strong> <span>כשמשהו עבד — גם את זה רואים. "בדקה 1:05 השתמשת בשם הלקוח פעמיים וחיקית את הסגנון שלו — קירוב מעולה, תשמור על זה."</span></div>
+          </li>
+          <li>
+            <span class="arrow">←</span>
+            <div><strong>מעקב שבועי.</strong> <span>סוכן מסתכל אחורה על 20 שיחות שעשה השבוע, רואה שהציון שלו עלה מ־62 ל־78, ומזהה את הנקודה שהוא עדיין צריך לחדד.</span></div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- WHY IT WORKS FOR 6TOK -->
+    <section class="wrap">
+      <h2 class="section-title">למה זה קריטי ל־6TOK</h2>
+      <p class="section-sub">העסק שלכם חי על איכות המכירה. המערכת הופכת כל סוכן ללומד עצמאי.</p>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>מאמנים 10 סוכנים במקום 3</h3>
+          <p>את/ה כבר לא צריך/ה לשבת על כל שיחה. המערכת עושה את העבודה השחורה — אתם מתרכזים בהדרכה האישית.</p>
+        </div>
+        <div class="card">
+          <h3>תוצאות מדידות, לא תחושות</h3>
+          <p>ציון לכל שיחה, לכל סוכן, לכל שבוע. רואים בדיוק מי עלה, מי ירד, ומי צריך תשומת לב.</p>
+        </div>
+        <div class="card">
+          <h3>סוכן משתפר גם בלעדייך</h3>
+          <p>אחרי כל שיחה יש לו פידבק ברור וממוקד. הוא נכנס לשיחה הבאה עם תובנה — לא עם שאלה.</p>
+        </div>
+        <div class="card">
+          <h3>התסריט שלך חי ונושם</h3>
+          <p>כל סטייה מהתסריט מתועדת. אתם רואים אילו חלקים בתסריט הסוכנים מדלגים עליהם — ומחליטים אם לשפר את התסריט או את הסוכן.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TIMELINE -->
+    <section class="wrap">
+      <h2 class="section-title">לוח זמנים</h2>
+      <p class="section-sub">עד 3 שבועות מאישור ההצעה ועד שהמערכת בידיים שלכם.</p>
+      <div class="timeline">
+        <div class="tl-card">
+          <span class="week">שבוע 1</span>
+          <h4>בנייה — הליבה</h4>
+          <p>העלאת הקלטות, תמלול מדויק בעברית, תצוגה מסונכרנת של התמלול והאודיו, ניהול תסריטים.</p>
+        </div>
+        <div class="tl-card">
+          <span class="week">שבוע 2</span>
+          <h4>בנייה — ניתוח וחוות דעת</h4>
+          <p>מנוע הניתוח המלא: קירובים, הרחקות, טיפול בהתנגדויות, טון, השוואה לתסריט, ציון והמלצות.</p>
+        </div>
+        <div class="tl-card">
+          <span class="week">שבוע 3</span>
+          <h4>שלב ההשקה</h4>
+          <p>התקנה על השרת שלכם, בדיקות על שיחות אמיתיות, התאמות אחרונות, והדרכה קצרה על השימוש.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICE -->
+    <section id="price" class="wrap price-wrap">
+      <div class="price-card">
+        <div class="price-label">ההצעה</div>
+        <div class="price"><span class="currency">₪</span>12,000</div>
+        <div class="price-note">
+          תשלום חד־פעמי · <strong>עוסק פטור — ללא מע״מ</strong>
+        </div>
+      </div>
+
+      <div class="includes">
+        <h4>מה כלול במחיר</h4>
+        <ul>
+          <li>בניית המערכת מקצה לקצה, מותאמת ל־6TOK</li>
+          <li>התקנה על השרת שלכם (Hostinger) והפעלה מלאה</li>
+          <li>תמלול מדויק בעברית — ללא תלות בשירותים חיצוניים</li>
+          <li>מנוע ניתוח מכירות — שאלות, טון, קירובים, הרחקות, התנגדויות</li>
+          <li>ניהול תסריטי מכירה — עריכה והחלפה ישירות במערכת</li>
+          <li>ארכיון מלא של כל השיחות, התמלולים והניתוחים</li>
+          <li>הדרכה קצרה על השימוש + תיעוד ברור</li>
+        </ul>
+      </div>
+
+      <a class="final-cta" href="https://wa.me/972507770700?text=%D7%94%D7%AA%D7%97%D7%9C%D7%A0%D7%95%20%D7%A2%D7%9D%206TOK">מוכנים להתחיל ←</a>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="brand-small">6TOK · למכור בביטחון</div>
+      <div style="margin-top:6px">הצעת מחיר · תקפה ל־30 יום מתאריך השליחה</div>
+    </div>
+  </footer>
+
+</body>
+</html>

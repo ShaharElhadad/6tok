@@ -1,0 +1,15 @@
+# 6TOK Whisper server — max-accuracy Hebrew transcription
+# Install:
+#   python -m venv .venv && source .venv/bin/activate  (linux/mac)
+#   python -m venv .venv && .venv\Scripts\activate     (windows)
+#   pip install -r requirements.txt
+#
+# For GPU: install torch with CUDA first, e.g.
+#   pip install torch==2.3.1 --index-url https://download.pytorch.org/whl/cu121
+
+whisperx==3.1.5
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20
+torch>=2.0
+torchaudio>=2.0
