@@ -1,7 +1,8 @@
 import Link from 'next/link';
-import { Clock, FileAudio, ChevronLeft } from 'lucide-react';
 import { StatusBadge } from './StatusBadge';
 import type { Recording } from '@/db';
+import { FileAudio } from 'lucide-react';
+import { cn } from '@/lib/cn';
 
 function fmtDuration(sec: number | null) {
   if (!sec) return '—';
@@ -12,40 +13,63 @@ function fmtDuration(sec: number | null) {
 
 function fmtDate(iso: string) {
   const d = new Date(iso + 'Z');
-  return d.toLocaleString('he-IL', { dateStyle: 'medium', timeStyle: 'short' });
+  return d.toLocaleString('he-IL', { dateStyle: 'short', timeStyle: 'short' });
 }
 
-export function RecordingCard({ r, score }: { r: Recording; score?: number | null }) {
+function scoreColor(score: number) {
+  if (score >= 80) return 'text-emerald-400';
+  if (score >= 60) return 'text-brand';
+  return 'text-red-400';
+}
+
+export function RecordingCard({
+  r,
+  score,
+}: {
+  r: Recording;
+  score?: number | null;
+  idx?: number;
+}) {
   return (
     <Link
       href={`/recordings/${r.id}`}
-      className="group relative flex items-center gap-4 rounded-xl border border-white/5 bg-ink-900/60 p-4 transition-all hover:border-brand/40 hover:bg-ink-900"
+      className="group grid grid-cols-[auto_1fr_auto_auto_auto] items-center gap-4 border-b border-white/[0.05] px-4 py-3 transition-colors hover:bg-white/[0.02] last:border-b-0"
     >
-      <div className="flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-ink-800 ring-1 ring-white/5 transition-colors group-hover:bg-brand/10">
-        <FileAudio className="h-5 w-5 text-brand" />
+      {/* Icon */}
+      <div className="flex h-9 w-9 flex-none items-center justify-center rounded-lg bg-white/[0.03] ring-1 ring-white/[0.06] transition-colors group-hover:bg-brand/10 group-hover:ring-brand/30">
+        <FileAudio className="h-4 w-4 text-ink-300 transition-colors group-hover:text-brand" />
       </div>
 
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <h3 className="truncate font-semibold text-ink-100">{r.original_name}</h3>
-          <StatusBadge status={r.status} />
+      {/* Title */}
+      <div className="min-w-0">
+        <div className="truncate text-[14px] font-medium text-ink-100">
+          {r.original_name}
         </div>
-        <div className="mt-1 flex items-center gap-3 text-xs text-ink-300">
-          <span className="inline-flex items-center gap-1">
-            <Clock className="h-3.5 w-3.5" /> {fmtDuration(r.duration_sec)}
+        <div className="mt-0.5 text-[11px] text-ink-400">
+          {fmtDate(r.created_at)}
+        </div>
+      </div>
+
+      {/* Duration */}
+      <div className="hidden w-16 text-center text-[13px] tabular-nums text-ink-300 md:block">
+        {fmtDuration(r.duration_sec)}
+      </div>
+
+      {/* Status */}
+      <div className="w-24 justify-end">
+        <StatusBadge status={r.status} />
+      </div>
+
+      {/* Score */}
+      <div className="w-14 text-left tabular-nums">
+        {typeof score === 'number' ? (
+          <span className={cn('text-[18px] font-semibold', scoreColor(score))}>
+            {score}
           </span>
-          <span>{fmtDate(r.created_at)}</span>
-        </div>
+        ) : (
+          <span className="text-ink-500">—</span>
+        )}
       </div>
-
-      {typeof score === 'number' && (
-        <div className="flex flex-none flex-col items-center rounded-lg bg-ink-800/80 px-3 py-2 ring-1 ring-white/5">
-          <span className="text-xs text-ink-300">ציון</span>
-          <span className="text-lg font-bold text-brand">{score}</span>
-        </div>
-      )}
-
-      <ChevronLeft className="h-5 w-5 flex-none text-ink-400 transition-transform group-hover:-translate-x-0.5 group-hover:text-brand" />
     </Link>
   );
 }

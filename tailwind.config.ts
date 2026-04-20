@@ -6,17 +6,21 @@ const config: Config = {
     extend: {
       colors: {
         ink: {
-          950: '#0F0F10',
-          900: '#171719',
-          800: '#1F1F22',
-          700: '#2B2B2E',
-          600: '#3A3A3E',
-          500: '#4C4C52',
-          400: '#6B6B72',
-          300: '#9C9CA3',
-          200: '#C4C4CA',
-          100: '#E5E5E8',
+          950: '#0A0A0B',
+          900: '#111113',
+          880: '#151518',
+          850: '#191A1D',
+          800: '#1E1F22',
+          700: '#282A2D',
+          600: '#35373B',
+          500: '#4A4C51',
+          400: '#686A70',
+          300: '#9A9C9F',
+          200: '#C4C5C7',
+          100: '#E6E7E8',
+          50:  '#F2F2F3',
         },
+        paper: '#F4EDE1',
         brand: {
           DEFAULT: '#E85D2B',
           50: '#FEF3ED',
@@ -33,15 +37,15 @@ const config: Config = {
       },
       fontFamily: {
         sans: ['var(--font-rubik)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-rubik)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-frank)', 'var(--font-rubik)', 'Georgia', 'serif'],
+        mono: ['var(--font-mono)', 'ui-monospace', 'monospace'],
       },
-      boxShadow: {
-        glow: '0 0 0 1px rgba(232,93,43,0.35), 0 10px 40px -10px rgba(232,93,43,0.4)',
-        card: '0 1px 0 0 rgba(255,255,255,0.04) inset, 0 20px 40px -20px rgba(0,0,0,0.6)',
+      letterSpacing: {
+        mono: '0.14em',
       },
-      backgroundImage: {
-        'radial-fade':
-          'radial-gradient(80% 50% at 50% 0%, rgba(232,93,43,0.14) 0%, rgba(232,93,43,0) 60%)',
+      fontSize: {
+        'display-xl': ['clamp(48px, 8vw, 96px)', { lineHeight: '1.02', letterSpacing: '-0.02em' }],
+        'display-lg': ['clamp(36px, 5vw, 64px)', { lineHeight: '1.05', letterSpacing: '-0.015em' }],
       },
     },
   },

@@ -1,49 +1,19 @@
 import { cn } from '@/lib/cn';
-import { CheckCircle2, CircleAlert, Loader2, Upload, Sparkles } from 'lucide-react';
 
-const MAP: Record<string, { label: string; cls: string; icon: JSX.Element }> = {
-  uploaded: {
-    label: 'הועלה',
-    cls: 'text-ink-200 bg-ink-800 ring-white/5',
-    icon: <Upload className="h-3.5 w-3.5" />,
-  },
-  transcribing: {
-    label: 'מתמלל…',
-    cls: 'text-brand bg-brand/10 ring-brand/30',
-    icon: <Loader2 className="h-3.5 w-3.5 animate-spin" />,
-  },
-  transcribed: {
-    label: 'תומלל',
-    cls: 'text-sky-300 bg-sky-500/10 ring-sky-500/30',
-    icon: <CheckCircle2 className="h-3.5 w-3.5" />,
-  },
-  analyzing: {
-    label: 'מנתח…',
-    cls: 'text-brand bg-brand/10 ring-brand/30',
-    icon: <Loader2 className="h-3.5 w-3.5 animate-spin" />,
-  },
-  analyzed: {
-    label: 'מוכן',
-    cls: 'text-emerald-300 bg-emerald-500/10 ring-emerald-500/30',
-    icon: <Sparkles className="h-3.5 w-3.5" />,
-  },
-  failed: {
-    label: 'שגיאה',
-    cls: 'text-red-300 bg-red-500/10 ring-red-500/30',
-    icon: <CircleAlert className="h-3.5 w-3.5" />,
-  },
+const MAP: Record<string, { label: string; dot: string; text: string }> = {
+  uploaded:     { label: 'הועלה',   dot: 'bg-ink-400',             text: 'text-ink-200' },
+  transcribing: { label: 'מתמלל',   dot: 'bg-brand animate-pulse', text: 'text-brand' },
+  transcribed:  { label: 'תומלל',   dot: 'bg-ink-100',             text: 'text-ink-100' },
+  analyzing:    { label: 'מנתח',    dot: 'bg-brand animate-pulse', text: 'text-brand' },
+  analyzed:     { label: 'מוכן',    dot: 'bg-brand',               text: 'text-brand' },
+  failed:       { label: 'שגיאה',   dot: 'bg-red-400',             text: 'text-red-300' },
 };
 
 export function StatusBadge({ status }: { status: string }) {
   const m = MAP[status] ?? MAP.uploaded;
   return (
-    <span
-      className={cn(
-        'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ring-1',
-        m.cls,
-      )}
-    >
-      {m.icon}
+    <span className={cn('mono inline-flex items-center gap-2 text-[10px]', m.text)}>
+      <span className={cn('h-1.5 w-1.5 rounded-full', m.dot)} />
       {m.label}
     </span>
   );

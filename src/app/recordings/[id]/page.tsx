@@ -1,4 +1,4 @@
-import { TopBar } from '@/components/TopBar';
+import { AppShell } from '@/components/AppShell';
 import { RecordingView } from '@/components/RecordingView';
 
 export const dynamic = 'force-dynamic';
@@ -10,11 +10,10 @@ export default async function RecordingPage({
 }) {
   const { id } = await params;
   return (
-    <div className="min-h-screen">
-      <TopBar />
-      <main className="mx-auto max-w-6xl px-6 pb-24 pt-8">
+    <AppShell title="שיחה" subtitle={`RECORDING · #${id}`}>
+      <div className="p-6 md:p-8">
         <RecordingView id={Number(id)} />
-      </main>
-    </div>
+      </div>
+    </AppShell>
   );
 }

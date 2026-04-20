@@ -1,22 +1,36 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Logo } from './Logo';
-import { FileText, Home } from 'lucide-react';
+import { cn } from '@/lib/cn';
 
 export function TopBar() {
+  const pathname = usePathname();
   return (
-    <header className="sticky top-0 z-20 border-b border-white/5 bg-ink-950/70 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <Link href="/" className="transition-opacity hover:opacity-90">
-          <Logo size={36} />
-        </Link>
-        <nav className="flex items-center gap-1 text-sm">
-          <NavLink href="/" icon={<Home className="h-4 w-4" />}>
-            הקלטות
-          </NavLink>
-          <NavLink href="/scripts" icon={<FileText className="h-4 w-4" />}>
-            התסריט
-          </NavLink>
-        </nav>
+    <header className="sticky top-0 z-20 hairline-b bg-ink-950/85 backdrop-blur-md">
+      <div className="mx-auto flex h-24 max-w-6xl items-center justify-between px-6">
+        {/* Right cluster (RTL start): Logo + Nav together */}
+        <div className="flex items-center gap-10">
+          <Link href="/" className="transition-opacity hover:opacity-90">
+            <Logo size={64} />
+          </Link>
+
+          <nav className="flex items-center gap-1">
+            <NavLink href="/" active={pathname === '/'}>
+              הקלטות
+            </NavLink>
+            <NavLink href="/scripts" active={pathname?.startsWith('/scripts')}>
+              תסריט
+            </NavLink>
+          </nav>
+        </div>
+
+        {/* Left cluster: meta / build marker */}
+        <div className="hidden items-center gap-3 sm:flex">
+          <span className="mono text-[10px] text-ink-400">v0.1 · MVP</span>
+          <span className="h-2 w-2 rounded-full bg-brand" aria-hidden />
+        </div>
       </div>
     </header>
   );
@@ -24,20 +38,25 @@ export function TopBar() {
 
 function NavLink({
   href,
-  icon,
+  active,
   children,
 }: {
   href: string;
-  icon: React.ReactNode;
+  active?: boolean;
   children: React.ReactNode;
 }) {
   return (
     <Link
       href={href}
-      className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-ink-200 transition-colors hover:bg-white/5 hover:text-ink-100"
+      className={cn(
+        'relative px-3 py-2 text-[15px] transition-colors',
+        active ? 'text-ink-100' : 'text-ink-300 hover:text-ink-100',
+      )}
     >
-      {icon}
       {children}
+      {active && (
+        <span className="absolute inset-x-3 -bottom-px h-[2px] bg-brand" aria-hidden />
+      )}
     </Link>
   );
 }
