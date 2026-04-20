@@ -1,22 +1,52 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Check, Copy, RefreshCw, CircleAlert, CheckCircle2 } from 'lucide-react';
+import {
+  Check,
+  Copy,
+  RefreshCw,
+  CircleAlert,
+  CheckCircle2,
+  Cloud,
+  Server,
+} from 'lucide-react';
 import { cn } from '@/lib/cn';
 
 type Health = {
+  ready: boolean;
+  transcription_engine: 'whisperx' | 'groq' | 'openai' | null;
+  llm_provider: 'anthropic' | 'gemini' | null;
+
   whisper_url: string;
   whisper_ok: boolean;
   whisper_info?: any;
+
+  groq_configured: boolean;
+  groq_model: string;
+  openai_configured: boolean;
+  openai_base_url: string;
+  whisper_model: string;
+
   anthropic_configured: boolean;
   anthropic_model: string;
+  gemini_configured: boolean;
+  gemini_model: string;
+
   db_path: string;
   uploads_path: string;
   version: string;
 };
 
+const ENGINE_LABEL: Record<string, string> = {
+  whisperx: 'WhisperX (מקומי · חינם · ללא הגבלת גודל)',
+  groq: 'Groq (חינם · whisper-large-v3 · עד 25MB)',
+  openai: 'OpenAI (בתשלום · whisper-1 · עד 25MB)',
+  anthropic: 'Anthropic Claude',
+  gemini: 'Google Gemini (חינם)',
+};
+
 export function SettingsPage() {
-  const [health, setHealth] = useState<Health | null>(null);
+  const [h, setH] = useState<Health | null>(null);
   const [loading, setLoading] = useState(true);
   const [testing, setTesting] = useState(false);
 
@@ -25,7 +55,7 @@ export function SettingsPage() {
     try {
       const r = await fetch('/api/health', { cache: 'no-store' });
       const j = await r.json();
-      setHealth(j);
+      setH(j);
     } catch {}
     setLoading(false);
     setTesting(false);
@@ -37,74 +67,122 @@ export function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-3xl p-6">
-      {/* System health */}
-      <Section title="מצב המערכת" desc="סטטוס חיבורים ונתיבי קבצים">
-        <div className="grid gap-2">
-          <HealthRow
-            label="שרת Whisper"
-            sublabel={health?.whisper_url}
-            ok={!!health?.whisper_ok}
-            loading={loading}
-            detail={
-              health?.whisper_info
-                ? `${health.whisper_info.model} · ${health.whisper_info.device} · ${health.whisper_info.compute_type}`
-                : 'ודא ש־uvicorn רץ על port 8787'
-            }
-          />
-          <HealthRow
-            label="Anthropic API (Claude)"
-            sublabel={health?.anthropic_model}
-            ok={!!health?.anthropic_configured}
-            loading={loading}
-            detail={
-              health?.anthropic_configured
-                ? 'המפתח מוגדר'
-                : 'הוסף ANTHROPIC_API_KEY ל־.env.local'
-            }
-          />
+      {/* Overall state */}
+      <Section title="מצב המערכת">
+        <div className="mb-3 flex items-center justify-between rounded-lg bg-ink-900 px-4 py-3 ring-1 ring-white/[0.06]">
+          <div className="flex items-center gap-3">
+            {h?.ready ? (
+              <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+            ) : (
+              <CircleAlert className="h-5 w-5 text-amber-400" />
+            )}
+            <div>
+              <div className="text-[14px] font-medium text-ink-100">
+                {h?.ready ? 'המערכת מוכנה לתמלול וניתוח' : 'חסרות הגדרות'}
+              </div>
+              <div className="mt-0.5 text-[11px] text-ink-400">
+                {h?.ready
+                  ? `תמלול: ${ENGINE_LABEL[h.transcription_engine || '']} · ניתוח: ${ENGINE_LABEL[h.llm_provider || '']}`
+                  : 'הוסף לפחות ספק תמלול וספק ניתוח אחד לקובץ .env.local'}
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={load}
+            disabled={testing}
+            className="inline-flex items-center gap-2 rounded-md bg-white/[0.04] px-3 py-1.5 text-[12px] text-ink-200 ring-1 ring-white/[0.08] transition-colors hover:bg-white/[0.08]"
+          >
+            <RefreshCw className={cn('h-3.5 w-3.5', testing && 'animate-spin')} />
+            בדוק מחדש
+          </button>
         </div>
-
-        <button
-          onClick={load}
-          disabled={testing}
-          className="mt-3 inline-flex items-center gap-2 rounded-md bg-white/[0.04] px-3 py-1.5 text-[12px] text-ink-200 ring-1 ring-white/[0.08] transition-colors hover:bg-white/[0.08]"
-        >
-          <RefreshCw className={cn('h-3.5 w-3.5', testing && 'animate-spin')} />
-          בדוק מחדש
-        </button>
       </Section>
 
-      {/* Config */}
-      <Section
-        title="תצורה"
-        desc="הערכים נטענים מקובץ .env.local. לשינוי — ערוך את הקובץ והפעל מחדש את השרת."
-      >
-        <div className="grid gap-2 text-[13px]">
-          <ConfigRow label="WHISPER_URL" value={health?.whisper_url || '—'} />
-          <ConfigRow label="ANTHROPIC_MODEL" value={health?.anthropic_model || '—'} />
-          <ConfigRow label="ANTHROPIC_API_KEY" value={health?.anthropic_configured ? '•••••••••• (מוגדר)' : '(חסר)'} />
+      {/* Transcription */}
+      <Section title="תמלול" desc="ברירת מחדל: WhisperX מקומי. אם הוא לא רץ — Groq (חינמי), ואם לא — OpenAI.">
+        <div className="grid gap-2">
+          <ProviderRow
+            label="WhisperX (מקומי)"
+            active={h?.transcription_engine === 'whisperx'}
+            ok={!!h?.whisper_ok}
+            loading={loading}
+            icon={<Server className="h-4 w-4" />}
+            detail={
+              h?.whisper_ok
+                ? `${h.whisper_info?.model} · ${h.whisper_info?.device}`
+                : `פועל על ${h?.whisper_url} (לא מגיב)`
+            }
+            env="WHISPER_URL"
+          />
+          <ProviderRow
+            label="Groq · whisper-large-v3 (חינם)"
+            active={h?.transcription_engine === 'groq'}
+            ok={!!h?.groq_configured}
+            loading={loading}
+            icon={<Cloud className="h-4 w-4" />}
+            detail={h?.groq_configured ? 'מפתח מוגדר' : 'חסר GROQ_API_KEY — קבל מ־console.groq.com'}
+            env="GROQ_API_KEY"
+          />
+          <ProviderRow
+            label="OpenAI · whisper-1 (בתשלום)"
+            active={h?.transcription_engine === 'openai'}
+            ok={!!h?.openai_configured}
+            loading={loading}
+            icon={<Cloud className="h-4 w-4" />}
+            detail={h?.openai_configured ? 'מפתח מוגדר' : 'חסר OPENAI_API_KEY'}
+            env="OPENAI_API_KEY"
+          />
+        </div>
+      </Section>
+
+      {/* Analysis */}
+      <Section title="ניתוח (LLM)" desc="ברירת מחדל: Anthropic. אם חסר — Gemini (חינמי).">
+        <div className="grid gap-2">
+          <ProviderRow
+            label="Anthropic Claude"
+            active={h?.llm_provider === 'anthropic'}
+            ok={!!h?.anthropic_configured}
+            loading={loading}
+            icon={<Cloud className="h-4 w-4" />}
+            detail={
+              h?.anthropic_configured
+                ? h.anthropic_model
+                : 'חסר ANTHROPIC_API_KEY'
+            }
+            env="ANTHROPIC_API_KEY"
+          />
+          <ProviderRow
+            label="Google Gemini (חינם)"
+            active={h?.llm_provider === 'gemini'}
+            ok={!!h?.gemini_configured}
+            loading={loading}
+            icon={<Cloud className="h-4 w-4" />}
+            detail={
+              h?.gemini_configured
+                ? h.gemini_model
+                : 'חסר GEMINI_API_KEY — קבל מ־aistudio.google.com/apikey'
+            }
+            env="GEMINI_API_KEY"
+          />
         </div>
       </Section>
 
       {/* Paths */}
-      <Section title="אחסון" desc="מיקום הקבצים במחשב/שרת">
+      <Section title="אחסון" desc="">
         <div className="grid gap-2">
-          <ConfigRow label="בסיס נתונים" value={health?.db_path || '—'} />
-          <ConfigRow label="תיקיית העלאות" value={health?.uploads_path || '—'} />
+          <ConfigRow label="DB" value={h?.db_path || '—'} />
+          <ConfigRow label="UPLOADS" value={h?.uploads_path || '—'} />
         </div>
       </Section>
 
-      {/* Version */}
-      <Section title="אודות" desc="">
+      <Section title="אודות">
         <div className="flex items-center justify-between rounded-lg bg-ink-900 px-4 py-3 ring-1 ring-white/[0.06]">
           <div>
             <div className="text-[14px] font-medium text-ink-100">6TOK</div>
-            <div className="text-[11px] text-ink-400">
-              מערכת לאימון מכירות — MVP
-            </div>
+            <div className="text-[11px] text-ink-400">מערכת לאימון מכירות — MVP</div>
           </div>
           <span className="rounded-md bg-white/[0.04] px-2 py-1 text-[11px] text-ink-300 ring-1 ring-white/[0.08]">
-            v{health?.version || '0.1.0'}
+            v{h?.version || '0.1.0'}
           </span>
         </div>
       </Section>
@@ -132,45 +210,65 @@ function Section({
   );
 }
 
-function HealthRow({
+function ProviderRow({
   label,
-  sublabel,
+  active,
   ok,
   loading,
+  icon,
   detail,
+  env,
 }: {
   label: string;
-  sublabel?: string;
+  active: boolean;
   ok: boolean;
   loading: boolean;
-  detail?: string;
+  icon: React.ReactNode;
+  detail: string;
+  env: string;
 }) {
   return (
     <div
       className={cn(
         'flex items-center justify-between rounded-lg px-4 py-3 ring-1 transition-colors',
-        loading
-          ? 'bg-ink-900 ring-white/[0.06]'
+        active
+          ? 'bg-brand/[0.06] ring-brand/30'
           : ok
             ? 'bg-emerald-500/[0.04] ring-emerald-500/20'
-            : 'bg-red-500/[0.04] ring-red-500/20',
+            : 'bg-ink-900 ring-white/[0.06]',
       )}
     >
-      <div className="min-w-0">
-        <div className="flex items-center gap-2">
-          {!loading &&
-            (ok ? (
-              <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-            ) : (
-              <CircleAlert className="h-4 w-4 text-red-400" />
-            ))}
-          <span className="text-[14px] font-medium text-ink-100">{label}</span>
+      <div className="flex min-w-0 items-center gap-3">
+        <span
+          className={cn(
+            'flex h-7 w-7 flex-none items-center justify-center rounded-md',
+            active
+              ? 'bg-brand/20 text-brand'
+              : ok
+                ? 'bg-emerald-500/15 text-emerald-400'
+                : 'bg-white/[0.04] text-ink-400',
+          )}
+        >
+          {icon}
+        </span>
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="text-[14px] font-medium text-ink-100">{label}</span>
+            {active && (
+              <span className="rounded bg-brand/20 px-1.5 py-0.5 text-[10px] font-medium text-brand">
+                פעיל
+              </span>
+            )}
+            {!active && ok && (
+              <span className="rounded bg-emerald-500/15 px-1.5 py-0.5 text-[10px] font-medium text-emerald-400">
+                מוכן
+              </span>
+            )}
+          </div>
+          <div className="mt-0.5 truncate text-[12px] text-ink-400">{detail}</div>
         </div>
-        {detail && <div className="mt-1 text-[12px] text-ink-400">{detail}</div>}
       </div>
-      {sublabel && (
-        <span className="font-mono text-[11px] text-ink-400">{sublabel}</span>
-      )}
+      <span className="flex-none font-mono text-[10px] text-ink-500">{env}</span>
     </div>
   );
 }
@@ -192,7 +290,11 @@ function ConfigRow({ label, value }: { label: string; value: string }) {
           className="flex h-7 w-7 flex-none items-center justify-center rounded-md text-ink-400 transition-colors hover:bg-white/[0.05] hover:text-ink-200"
           title="העתק"
         >
-          {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+          {copied ? (
+            <Check className="h-3.5 w-3.5 text-emerald-400" />
+          ) : (
+            <Copy className="h-3.5 w-3.5" />
+          )}
         </button>
       </div>
     </div>

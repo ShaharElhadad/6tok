@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import { AppShell } from '@/components/AppShell';
 import { UploadZone } from '@/components/UploadZone';
 import { RecordingCard } from '@/components/RecordingCard';
-import { Plus, Search, SlidersHorizontal } from 'lucide-react';
+import { SetupBanner } from '@/components/SetupBanner';
+import { Plus, Search } from 'lucide-react';
 import type { Recording } from '@/db';
 import { cn } from '@/lib/cn';
 
@@ -63,6 +64,8 @@ export default function Home() {
         </button>
       }
     >
+      <SetupBanner />
+
       <div className="mx-auto max-w-6xl p-6">
         {/* Stats */}
         <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4">
