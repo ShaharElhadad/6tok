@@ -1,5 +1,20 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { Agent, setGlobalDispatcher } from 'undici';
+
+// Global dispatcher with no body/headers timeout — long GPU transcribes can take many minutes.
+let _dispatcherSet = false;
+function ensureLongDispatcher() {
+  if (_dispatcherSet) return;
+  setGlobalDispatcher(
+    new Agent({
+      headersTimeout: 0,
+      bodyTimeout: 0,
+      connectTimeout: 10_000,
+    }),
+  );
+  _dispatcherSet = true;
+}
 
 export type WhisperWord = {
   text: string;
@@ -18,7 +33,7 @@ export type WhisperSegment = {
   words: WhisperWord[];
 };
 
-export type WhisperEngine = 'whisperx' | 'groq' | 'openai';
+export type WhisperEngine = 'local' | 'groq' | 'openai';
 
 export type WhisperResult = {
   ok: boolean;
@@ -38,7 +53,12 @@ export class WhisperConfigError extends Error {}
  */
 export async function transcribeFile(
   absFilePath: string,
-  opts?: { language?: string; diarize?: boolean },
+  opts?: {
+    language?: string;
+    diarize?: boolean;
+    minSpeakers?: number;
+    maxSpeakers?: number;
+  },
 ): Promise<WhisperResult> {
   const whisperUrl = (process.env.WHISPER_URL || 'http://127.0.0.1:8787').replace(/\/$/, '');
 
@@ -86,7 +106,7 @@ async function isLocalWhisperUp(url: string): Promise<boolean> {
 async function transcribeWithLocal(
   abs: string,
   url: string,
-  opts?: { language?: string; diarize?: boolean },
+  opts?: { language?: string; diarize?: boolean; minSpeakers?: number; maxSpeakers?: number },
 ): Promise<WhisperResult> {
   const filename = path.basename(abs);
   const buf = fs.readFileSync(abs);
@@ -95,16 +115,22 @@ async function transcribeWithLocal(
   form.append('audio', new Blob([buf]), filename);
   if (opts?.language) form.append('language', opts.language);
   form.append('diarize', opts?.diarize ? '1' : '0');
+  if (opts?.minSpeakers != null) form.append('min_speakers', String(opts.minSpeakers));
+  if (opts?.maxSpeakers != null) form.append('max_speakers', String(opts.maxSpeakers));
 
-  const res = await fetch(`${url}/transcribe`, { method: 'POST', body: form });
+  ensureLongDispatcher();
+  const res = await fetch(`${url}/transcribe`, {
+    method: 'POST',
+    body: form,
+  });
   if (!res.ok) {
     const txt = await res.text().catch(() => '');
-    throw new Error(`WhisperX ${res.status}: ${txt || res.statusText}`);
+    throw new Error(`Local Whisper ${res.status}: ${txt || res.statusText}`);
   }
   const data = (await res.json()) as any;
   return {
     ok: true,
-    engine: 'whisperx',
+    engine: 'local',
     language: data.language || opts?.language || 'he',
     duration_sec: data.duration_sec ?? null,
     segments: data.segments || [],

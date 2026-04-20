@@ -10,7 +10,7 @@ export default async function RecordingPage({
 }) {
   const { id } = await params;
   return (
-    <AppShell title="שיחה" subtitle={`RECORDING · #${id}`}>
+    <AppShell title="שיחה">
       <div className="p-6 md:p-8">
         <RecordingView id={Number(id)} />
       </div>

@@ -25,7 +25,13 @@ export async function POST(_: Request, { params }: { params: Promise<{ id: strin
   (async () => {
     try {
       const abs = path.join(process.cwd(), 'uploads', rec.filename);
-      const result = await transcribeFile(abs, { language: 'he' });
+      const result = await transcribeFile(abs, {
+        language: 'he',
+        // Sales calls: typically 2 speakers (coach/seller + trainee/customer). Allow 2–4.
+        diarize: true,
+        minSpeakers: 2,
+        maxSpeakers: 4,
+      });
 
       const tx = db.transaction(() => {
         db.prepare('DELETE FROM transcript_segments WHERE recording_id = ?').run(id);

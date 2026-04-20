@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 
 export default function ScriptsRoute() {
   return (
-    <AppShell title="תסריטים" subtitle="SCRIPTS · ACTIVE SCRIPT IS USED FOR ANALYSIS">
+    <AppShell title="תסריטים">
       <div className="p-8">
         <ScriptsView />
       </div>

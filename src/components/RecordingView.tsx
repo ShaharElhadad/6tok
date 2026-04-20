@@ -233,13 +233,15 @@ export function RecordingView({ id }: { id: number }) {
                     >
                       <div className="mb-1 flex items-center gap-2 text-[11px] text-ink-400">
                         <span className="tabular-nums">{fmtMs(s.start_ms)}</span>
-                        {s.speaker && (
-                          <span className="rounded bg-ink-800 px-1.5 py-0.5 text-ink-300 ring-1 ring-white/5">
-                            {s.speaker}
-                          </span>
-                        )}
+                        {s.speaker && <SpeakerChip speaker={s.speaker} />}
                       </div>
-                      <p className="text-[15px] leading-relaxed text-ink-100">
+                      <p
+                        className={cn(
+                          'text-[15px] leading-relaxed text-ink-100',
+                          s.speaker ? 'border-r-2 pr-3' : '',
+                          s.speaker ? speakerBorder(s.speaker) : '',
+                        )}
+                      >
                         {words.length > 0 ? (
                           <WordByWord
                             words={words}
@@ -543,6 +545,43 @@ function ScoreBadge({ score }: { score: number }) {
       <span className="text-xs">ציון כולל</span>
       <span className="text-2xl font-bold tabular-nums">{score}</span>
     </div>
+  );
+}
+
+const SPEAKER_STYLES: Array<{ chip: string; border: string }> = [
+  { chip: 'bg-brand/15 text-brand ring-brand/30',            border: 'border-brand' },
+  { chip: 'bg-sky-500/15 text-sky-300 ring-sky-500/30',      border: 'border-sky-500' },
+  { chip: 'bg-emerald-500/15 text-emerald-300 ring-emerald-500/30', border: 'border-emerald-500' },
+  { chip: 'bg-violet-500/15 text-violet-300 ring-violet-500/30', border: 'border-violet-500' },
+];
+
+function speakerIdx(s: string) {
+  const m = /SPEAKER_(\d+)/i.exec(s);
+  const n = m ? Number(m[1]) : 0;
+  return n % SPEAKER_STYLES.length;
+}
+
+function speakerLabel(s: string) {
+  const idx = speakerIdx(s);
+  return `דובר ${idx + 1}`;
+}
+
+function speakerBorder(s: string) {
+  return SPEAKER_STYLES[speakerIdx(s)].border;
+}
+
+function SpeakerChip({ speaker }: { speaker: string }) {
+  const cls = SPEAKER_STYLES[speakerIdx(speaker)].chip;
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-medium ring-1',
+        cls,
+      )}
+    >
+      <span className="h-1.5 w-1.5 rounded-full bg-current" />
+      {speakerLabel(speaker)}
+    </span>
   );
 }
 

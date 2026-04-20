@@ -14,7 +14,7 @@ import { cn } from '@/lib/cn';
 
 type Health = {
   ready: boolean;
-  transcription_engine: 'whisperx' | 'groq' | 'openai' | null;
+  transcription_engine: 'local' | 'groq' | 'openai' | null;
   llm_provider: 'anthropic' | 'gemini' | null;
 
   whisper_url: string;
@@ -38,7 +38,7 @@ type Health = {
 };
 
 const ENGINE_LABEL: Record<string, string> = {
-  whisperx: 'WhisperX (מקומי · חינם · ללא הגבלת גודל)',
+  local: 'Whisper מקומי (faster-whisper · חינם · ללא הגבלת גודל)',
   groq: 'Groq (חינם · whisper-large-v3 · עד 25MB)',
   openai: 'OpenAI (בתשלום · whisper-1 · עד 25MB)',
   anthropic: 'Anthropic Claude',
@@ -102,14 +102,14 @@ export function SettingsPage() {
       <Section title="תמלול" desc="ברירת מחדל: WhisperX מקומי. אם הוא לא רץ — Groq (חינמי), ואם לא — OpenAI.">
         <div className="grid gap-2">
           <ProviderRow
-            label="WhisperX (מקומי)"
-            active={h?.transcription_engine === 'whisperx'}
+            label="Whisper מקומי (faster-whisper)"
+            active={h?.transcription_engine === 'local'}
             ok={!!h?.whisper_ok}
             loading={loading}
             icon={<Server className="h-4 w-4" />}
             detail={
               h?.whisper_ok
-                ? `${h.whisper_info?.model} · ${h.whisper_info?.device}`
+                ? `${h.whisper_info?.model} · ${h.whisper_info?.device} · ${h.whisper_info?.engine || 'faster-whisper'}`
                 : `פועל על ${h?.whisper_url} (לא מגיב)`
             }
             env="WHISPER_URL"

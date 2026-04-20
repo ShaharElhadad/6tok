@@ -24,7 +24,7 @@ export async function GET() {
 
   // Which engine will actually handle a transcription now
   const transcription_engine = whisper_ok
-    ? 'whisperx'
+    ? 'local'
     : groq_configured
       ? 'groq'
       : openai_configured
